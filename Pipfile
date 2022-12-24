@@ -14,5 +14,4 @@ geojson = "*"
 autopep8 = "*"
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.1"
+python_version = "3.9"

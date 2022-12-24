@@ -1,6 +1,6 @@
 import streamlit as st
 from dataclasses import dataclass
-from typing import Optional, Self, Dict, Tuple, NamedTuple
+from typing import Optional, Dict, Tuple, NamedTuple
 import ezdxf as ez
 from io import BytesIO, StringIO
 import re
@@ -14,7 +14,7 @@ class LongLat:
     latitude: float
 
     @classmethod
-    def from_string(cls, string) -> Optional[Self]:
+    def from_string(cls, string) -> Optional["Self"]:
         '''
         regex to convert a string in the format "N 4792384, E 798797" to a LongLat object
         '''
@@ -60,16 +60,15 @@ def process_dxf_file(dxf_file: ez.document.Drawing) -> DxfGeometry:
     dxf_boundary = None
 
     for entity in dxf_file.modelspace():
-        match entity.dxftype():
-            case 'POLYLINE':
-                if entity.dxf.layer == "POLYLINE":
-                    dxf_boundary = entity
-                    file_found(entity)
-            case 'POINT':
-                if entity.dxf.layer in ["POINT_A", "POINT_B", "POINT_C"]:
-                    dxf_cal_points[entity.dxf.layer] = CalPoint(
-                        name=entity.dxf.layer, longlat=LongLat(longitude=entity.dxf.location[0], latitude=entity.dxf.location[1]))
-                    file_found(entity)
+        if entity.dxftype() == 'POLYLINE':
+            if entity.dxf.layer == "POLYLINE":
+                dxf_boundary = entity
+                file_found(entity)
+        elif entity.dxftype() == 'POINT':
+            if entity.dxf.layer in ["POINT_A", "POINT_B", "POINT_C"]:
+                dxf_cal_points[entity.dxf.layer] = CalPoint(
+                    name=entity.dxf.layer, longlat=LongLat(longitude=entity.dxf.location[0], latitude=entity.dxf.location[1]))
+                file_found(entity)
 
     return DxfGeometry(
         dxf_cal_points["POINT_A"], dxf_cal_points["POINT_B"], dxf_cal_points["POINT_C"], dxf_boundary)
