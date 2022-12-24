@@ -30,13 +30,9 @@ class LongLat:
 
 @dataclass
 class CalPoint:
+    '''Calliberation Point: a geographical point with a name'''
     name: str
     longlat: LongLat
-
-
-def file_found(entity):
-    st.success(
-        f"Found in file: Entity={entity}, Layer={entity.dxf.layer}")
 
 
 @dataclass
@@ -47,7 +43,19 @@ class DxfGeometry:
     boundary: ez.entities.Polyline
 
 
-def process_dxf_file(dxf_file: ez.document.Drawing):
+class Transform(NamedTuple):
+    s: float
+    dx: float
+    dy: float
+    theta: float
+
+
+def file_found(entity):
+    st.success(
+        f"Found in file: Entity={entity}, Layer={entity.dxf.layer}")
+
+
+def process_dxf_file(dxf_file: ez.document.Drawing) -> DxfGeometry:
     dxf_cal_points = {}
     dxf_boundary = None
 
@@ -63,16 +71,8 @@ def process_dxf_file(dxf_file: ez.document.Drawing):
                         name=entity.dxf.layer, longlat=LongLat(longitude=entity.dxf.location[0], latitude=entity.dxf.location[1]))
                     file_found(entity)
 
-    # st.write(dxf_cal_points)
     return DxfGeometry(
         dxf_cal_points["POINT_A"], dxf_cal_points["POINT_B"], dxf_cal_points["POINT_C"], dxf_boundary)
-
-
-class Transform(NamedTuple):
-    s: float
-    dx: float
-    dy: float
-    theta: float
 
 
 def calculate_transform_params(cal_points: Dict[str, CalPoint], dxf_geometry: DxfGeometry) -> Transform:
@@ -141,11 +141,6 @@ def generate_calibrated_geojson(cal_points: Dict[str, LongLat], dxf_geometry: Dx
 
     feature = geojson.Feature(geometry=geometry, properties=properties)
     return feature
-
-
-def generate_geojson(dxf_geometry, trans):
-    boundary = dxf_geometry.boundary
-    geojson_boundary = geojson.Polygon()
 
 
 if __name__ == "__main__":
