@@ -7,6 +7,8 @@ name = "pypi"
 streamlit = "*"
 pydantic = "*"
 ezdxf = "*"
+matplotlib = "*"
+geojson = "*"
 
 [dev-packages]
 autopep8 = "*"
