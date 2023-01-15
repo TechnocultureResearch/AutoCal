@@ -242,7 +242,8 @@ def generate_calibrated_geojson(cal_points: Dict[str, LongLat], dxf_geometry:Dxf
 if __name__ == "__main__":
     st.image('https://www.vastuvihar.org/images/vastulogo.png', width=180)
     st.title("AutoCal")
-    st.write("Convert Dwg Files to geoJSON")
+    st.write("Convert Dxf Files to geoJSON (AutoCAD R12/L12 DXF format)")
+    st.video("https://www.youtube.com/watch?v=49IsNdOoKv0")
 
     dxf_geometry: Optional[DxfGeometry] = None
 
